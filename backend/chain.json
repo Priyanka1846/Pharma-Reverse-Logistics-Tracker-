@@ -1,0 +1,83 @@
+[
+  {
+    "index": 0,
+    "batchId": "GENESIS",
+    "actor": "SYSTEM",
+    "status": "INITIAL",
+    "timestamp": "2026-03-20T08:25:20.372Z",
+    "previousHash": "0",
+    "hash": "0"
+  },
+  {
+    "index": 1,
+    "batchId": "101",
+    "actor": "Retailer",
+    "status": "Expired",
+    "timestamp": "2026-03-20T08:27:01.623Z",
+    "previousHash": "0",
+    "hash": "9fb857987905e100226e81984d75e9ea0c344a2eab332f0bc6b821a786b74715"
+  },
+  {
+    "index": 2,
+    "batchId": "101",
+    "actor": "Distributor",
+    "status": "Collected",
+    "timestamp": "2026-03-20T08:27:28.358Z",
+    "previousHash": "9fb857987905e100226e81984d75e9ea0c344a2eab332f0bc6b821a786b74715",
+    "hash": "907ee9151ad962be2e01c8f21455e8417c5e6a514cc9def74f9a36cf62f44ab3"
+  },
+  {
+    "index": 3,
+    "batchId": "101",
+    "actor": "Manufacturer",
+    "status": "Verified",
+    "timestamp": "2026-03-20T08:27:53.847Z",
+    "previousHash": "907ee9151ad962be2e01c8f21455e8417c5e6a514cc9def74f9a36cf62f44ab3",
+    "hash": "f3a8833ea83ee9f5d039cb24916ab5edf96e7e8a3693adac9c2cb0585070774c"
+  },
+  {
+    "index": 4,
+    "batchId": "101",
+    "actor": "Disposal",
+    "status": "Destroyed",
+    "timestamp": "2026-03-20T08:28:16.686Z",
+    "previousHash": "f3a8833ea83ee9f5d039cb24916ab5edf96e7e8a3693adac9c2cb0585070774c",
+    "hash": "099178fd70f9ba8df1dd7d5763f9378fb15038b7bf0860dbc7f63c0701c1508a"
+  },
+  {
+    "index": 5,
+    "batchId": "102",
+    "actor": "Retailer",
+    "status": "Expired",
+    "timestamp": "2026-03-21T05:48:23.451Z",
+    "previousHash": "099178fd70f9ba8df1dd7d5763f9378fb15038b7bf0860dbc7f63c0701c1508a",
+    "hash": "da6944e0309f9dbfd9e48a4e62cf9e2beb5043917d669c9f25fede15fd4a8f2b"
+  },
+  {
+    "index": 6,
+    "batchId": "102",
+    "actor": "Distributor",
+    "status": "Collected",
+    "timestamp": "2026-03-21T05:51:17.337Z",
+    "previousHash": "da6944e0309f9dbfd9e48a4e62cf9e2beb5043917d669c9f25fede15fd4a8f2b",
+    "hash": "c44a6f5ee5f8e439f7fd8e78caebdb2a0f57d5793cb4e6d69dc06fe1d7286ffb"
+  },
+  {
+    "index": 7,
+    "batchId": "102",
+    "actor": "Manufacturer",
+    "status": "Verified",
+    "timestamp": "2026-03-21T05:51:27.938Z",
+    "previousHash": "c44a6f5ee5f8e439f7fd8e78caebdb2a0f57d5793cb4e6d69dc06fe1d7286ffb",
+    "hash": "510644ca33f66acd1299b0890b79968b9b65a94781219cbd09bd122bec45b42d"
+  },
+  {
+    "index": 8,
+    "batchId": "102",
+    "actor": "Disposal",
+    "status": "Destroyed",
+    "timestamp": "2026-03-21T05:51:38.605Z",
+    "previousHash": "510644ca33f66acd1299b0890b79968b9b65a94781219cbd09bd122bec45b42d",
+    "hash": "3af15ce5db48feec5cc2b6870101414a3108c321371d161ae11103f927f54ac1"
+  }
+]

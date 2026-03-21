@@ -1,0 +1,981 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Reverse Pharma Logistics Tracker</title>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+<style>
+
+body{
+background: linear-gradient(135deg,#eef2ff,#e0f2fe);
+background-image: radial-gradient(circle at 1px 1px, rgba(0,0,0,0.05) 1px, transparent 0);
+background-size: 20px 20px;
+font-family:"Inter",sans-serif;
+font-size:15px;
+margin:0;
+background:linear-gradient(135deg,#eef2ff,#e0f2fe);
+color:#1f2937;
+}
+
+/* MAIN LAYOUT */
+
+.container{
+max-width:1100px;
+margin:auto;
+padding:30px 20px;
+transition:0.3s;
+}
+
+.container.shifted{
+margin-left:270px;
+}
+
+/* HEADER */
+
+.header{
+background:rgba(255,255,255,0.6);
+backdrop-filter:blur(15px);
+max-width: 1100px;
+margin:auto;
+padding:25px;
+border-radius:18px;
+box-shadow:0 10px 30px rgba(0,0,0,.08);
+margin-bottom:30px;
+display:flex;
+align-items:center;
+gap:15px;
+}
+
+.header h2{
+margin:0;
+font-size:28px;
+font-weight:600;
+}
+
+/* HAMBURGER */
+
+.menuBtn{
+font-size:22px;
+cursor:pointer;
+background:none;
+border:none;
+color:#2563eb;
+}
+
+/* SIDEBAR */
+
+.sidebar
+{
+background: linear-gradient(180deg,#1e293b,#0f172a);
+position:fixed;
+left:-300px;
+top:0;
+height:100%;
+width:240px;
+background:#1e293b;
+color:white;
+box-shadow:6px 0 20px rgba(0,0,0,.2);
+padding:25px;
+transition:0.3s;
+z-index:1000;
+}
+
+.sidebar h3
+{
+color:#94a3b8;
+margin-bottom:20px;
+}
+
+/* when sidebar is open */
+.sidebar.active{
+left:0
+}
+
+.sidebar button
+{
+font-size:15px;
+font-weight:500;
+width:100%;
+margin-bottom:12px;
+background:#334155;
+border-radius:8px;
+text-align:left;
+padding:12px;
+transition:0.2s;
+}
+
+.sidebar button:hover
+{
+background:#2563eb;
+transform:translateX(5px);
+}
+
+/* SECTIONS */
+
+.section{
+margin-bottom: 30px;
+display:none;
+}
+
+h3{
+display:flex;
+align-items: center;
+gap:10px;
+font-size:22px;
+font-weight:600;
+margin-bottom:18px;
+margin-top:30px;
+border-left:4px solid #2563eb;
+padding-left:10px;
+}
+
+input{
+padding:12px;
+margin:10px 0;
+width:250px;
+border:1px solid #d1d5db;
+border-radius:10px;
+outline: none;
+transition:0.2s;
+}
+
+input:focus{
+border-color:#2563eb;
+box-shadow: 0 0 0 3px rgba(37,99,235,0.2);
+}
+
+
+/* BUTTON */
+
+button
+{
+padding:12px 18px;
+border:none;
+background:linear-gradient(135deg,#2563eb,#6366f1);
+color:white;
+border-radius:10px;
+cursor:pointer;
+font-size:14px;
+font-weight:600;
+margin:8px 8px 8px 0;
+transition:all .25s ease;
+}
+
+button:hover
+{
+transform:translateY(-3px);
+box-shadow:0 10px 20px rgba(99,102,241,.4);
+}
+
+button:disabled{
+background:#cbd5e1;
+cursor:not-allowed;
+}
+
+.primary-btn{
+background: linear-gradient(135deg,#2563eb,#6366f1);
+}
+
+.secondary-btn{
+background: #e2e8f0;
+color: #1f2937; 
+}
+
+/* BLOCKCHAIN */
+
+.chain{
+display:flex;
+align-items: center;
+gap: 15px;
+overflow-x:auto;
+padding-bottom: 10px;
+margin-top:20px;
+}
+
+.block
+{
+background:white;
+border-radius:14px;
+padding:18px;
+margin:12px;
+width:240px;
+box-shadow:0 10px 25px rgba(0,0,0,.1);
+border:1px solid #e5e7eb;
+font-size:13px;
+transition:all .25s ease;
+}
+
+.block:hover
+{
+transform:translateY(-8px) scale(1.04);
+box-shadow:0 20px 40px rgba(0,0,0,.2);
+}
+
+.block b{
+color:#2563eb;
+}
+
+.arrow{
+display: flex;
+align-items: center;
+justify-content: center;
+font-size:26px;
+align-self:center;
+}
+
+.expired{border-left:6px solid #ef4444;}
+.collected{border-left:6px solid #f59e0b;}
+.verified{border-left:6px solid #22c55e;}
+.destroyed{border-left:6px solid #111827;}
+
+/* ANALYTICS */
+
+.analytics{
+display:grid;
+grid-template-columns: repeat(auto-fit,minmax(180px,1fr));
+gap:20px;
+}
+
+.card{
+background:linear-gradient(135deg,#ffffff,#f1f5f9);
+padding:20px;
+border-radius:14px;
+box-shadow:0 8px 18px rgba(0,0,0,.08);
+width:180px;
+text-align:center;
+transition:0.3s;
+}
+
+.card:hover{
+transform:translateY(-5px);
+}
+
+.card-box{
+background: rgba(255,255,255,0.7);
+backdrop-filter: blur(12px);
+padding:25px;
+border-radius:16px;
+box-shadow:0 10px 25px rgba(0,0,0,.08);
+margin-bottom:25px;
+}
+
+
+
+.card h2{
+font-size:26px;
+font-weight:700;
+color:#2563eb;
+}
+
+/* TABLE */
+
+table{
+border-collapse:collapse;
+margin-top:12px;
+width:420px;
+background:white;
+}
+
+th,td{
+padding:10px;
+border:1px solid #e2e8f0;
+}
+
+th{
+background:#f1f5f9;
+}
+
+#loginPage h2{
+font-size:32px;
+margin-bottom:20px;
+}
+
+#loginPage select{
+border-radius:6px;
+border:1px solid #ccc;
+}
+
+#loginPage button{
+padding:12px 20px;
+font-size:15px;
+}
+
+#timelineOutput span{
+display:inline-block;
+margin:5px;
+padding:7px 12px;
+background:#2563eb;
+color:white;
+border-radius:6px;
+}
+
+#chainStatus{
+font-size:20px;
+font-weight:600;
+}
+
+.genesis
+{
+border-left:6px solid purple;
+background:linear-gradient(135deg,#ede9fe,#f5f3ff);
+font-weight:600;
+}
+
+</style>
+</head>
+
+<body>
+
+<div id="loginPage" style="display:flex;justify-content:center;align-items:center;height:100vh;flex-direction:column">
+
+<h2>Reverse Pharma Logistics System</h2>
+
+<h3>Login As</h3>
+
+<select id="roleSelect" style="padding:10px;font-size:16px">
+<option value="">Select Role</option>
+<option value="Retailer">Retailer</option>
+<option value="Distributor">Distributor</option>
+<option value="Manufacturer">Manufacturer</option>
+<option value="Disposal">Disposal Facility</option>
+<option value="Admin">Admin</option>
+</select>
+
+<br><br>
+
+<button onclick="enterSystem()">Enter Dashboard</button>
+
+</div>
+
+<!-- SIDEBAR -->
+
+<div class="sidebar">
+
+<h3>Menu</h3>
+
+<button onclick="showSection('dashboard');toggleSidebar()">Dashboard</button>
+<button onclick="showSection('analytics');toggleSidebar()">Admin Analytics</button>
+<button onclick="showSection('tracking');toggleSidebar()">Batch Tracking</button>
+<button onclick="showSection('blockchain');toggleSidebar()">Blockchain Explorer</button>
+
+</div>
+
+<div id="mainSystem" class="container" style="display:none">
+
+<div class="header">
+
+<button class="menuBtn" onclick="toggleSidebar()">☰</button>
+
+<h2>Pharmaceutical Reverse Logistics Tracker</h2>
+
+<button onclick="logout()" style="
+margin-left:auto;
+background:#ef4444;
+padding:10 px 14px;
+border-radius:8px;
+font-size:13px;">
+Logout
+</button>
+
+</div>
+
+
+<!-- DASHBOARD -->
+
+<div id="dashboardSection" class="section">
+
+<p id="roleDisplay"></p>
+
+<h3 id="chainStatus">Blockchain Integrity: Checking...</h3>
+
+<div class="card-box">
+<h3>Blockchain Explorer</h3>
+<p style="color:#64748b;font-size:13px;margin-bottom:-8px;">
+Track total blocks and batches in the system.
+</p>
+
+<p>Total Blocks: <span id="totalBlocks">0</span></p>
+<p>Total Batches: <span id="totalBatches">0</span></p>
+
+<input id="batchId" placeholder="Enter Batch ID">
+</div>
+
+<div class="card-box">
+<h3>QR Code Tracking</h3>
+<div id="qrcode"></div>
+
+<button id="retailerBtn" onclick="updateStatus('Retailer','Expired')">Retailer → Mark Expired</button>
+<button id="distributorBtn" onclick="updateStatus('Distributor','Collected')" disabled>Distributor → Collect Batch</button>
+<button id="manufacturerBtn" onclick="updateStatus('Manufacturer','Verified')" disabled>Manufacturer → Verify</button>
+<button id="disposalBtn" onclick="updateStatus('Disposal','Destroyed')" disabled>Disposal → Destroy</button>
+
+<button id="newBatchBtn" onclick="resetWorkflow()" disabled>Start New Batch</button>
+<button onclick="tamperChain()">Simulate Tampering</button>
+<button onclick="resetBlockchain()">Reset Blockchain (Demo)</button>
+<button onclick="exportReport()">Download Audit Report</button>
+
+</div>
+</div>
+
+
+<!-- ANALYTICS -->
+
+<div id="analyticsSection" class="section">
+
+<div class="card-box">
+
+<h3>Admin Analytical Dashboard</h3>
+
+<div class="analytics">
+
+<div class="card">
+Expired
+<h2 id="expiredCount">0</h2>
+</div>
+
+<div class="card">
+Collected
+<h2 id="collectedCount">0</h2>
+</div>
+
+<div class="card">
+Verified
+<h2 id="verifiedCount">0</h2>
+</div>
+
+<div class="card">
+Destroyed
+<h2 id="destroyedCount">0</h2>
+</div>
+
+</div>  
+
+</div>
+</div>
+
+
+<!-- TRACKING -->
+
+<div id="trackingSection" class="section">
+
+<div class="card-box">
+
+<h3>Batch Tracking Dashboard</h3>
+
+<table id="batchTable">
+<tr>
+<th>Batch ID</th>
+<th>Status</th>
+<th>Actor</th>
+</tr>
+</table>
+
+<h3>Batch Lifecycle Viewer</h3>
+
+<input id="searchBatch" placeholder="Enter Batch ID">
+
+<button onclick="viewBatchHistory()">View Timeline</button>
+
+<div id="timelineOutput"></div>
+
+</div>
+
+</div>  
+
+<!-- BLOCKCHAIN -->
+
+<div id="blockchainSection" class="section">
+
+<h3>Blockchain History</h3>
+
+<div class="chain" id="output"></div>
+
+</div>
+
+
+<script>
+
+let blockchainData=[];
+let currentRole="";
+
+function enterSystem()
+{
+const role = document.getElementById("roleSelect").value;
+
+if(role==="")
+{
+alert("Please select a role");
+return;
+}
+
+currentRole = role;
+
+document.getElementById("loginPage").style.display="none";
+document.getElementById("mainSystem").style.display="block";
+
+roleDisplay.innerHTML = `
+<span style="
+background:#2563eb;
+color:white;
+padding:6px 12px;
+border-radius:20px;
+font-size:13px;
+font-weight:600;">
+👤 Logged in as <b>${role}</b>
+</span`;
+
+// enable ONLY current role button
+retailerBtn.disabled = (role !== "Retailer");
+distributorBtn.disabled = (role !== "Distributor");
+manufacturerBtn.disabled = (role !== "Manufacturer");
+disposalBtn.disabled = (role !== "Disposal");
+
+// admin can access all
+if(role === "Admin")
+{
+    retailerBtn.disabled = false;
+    distributorBtn.disabled = false;
+    manufacturerBtn.disabled = false;
+    disposalBtn.disabled = false;
+}
+
+newBatchBtn.disabled = true;
+
+/* 👀 OPTIONAL UI HIDE (clean UI) */
+
+/* first show all */
+retailerBtn.style.display = "inline-block";
+distributorBtn.style.display = "inline-block";
+manufacturerBtn.style.display = "inline-block";
+disposalBtn.style.display = "inline-block";
+
+/* then hide others */
+if(role !== "Admin")
+{
+    if(role !== "Retailer") retailerBtn.style.display = "none";
+    if(role !== "Distributor") distributorBtn.style.display = "none";
+    if(role !== "Manufacturer") manufacturerBtn.style.display = "none";
+    if(role !== "Disposal") disposalBtn.style.display = "none";
+}
+
+if(role === "Admin")
+{
+    retailerBtn.style.display = "none";
+    distributorBtn.style.display = "none";
+    manufacturerBtn.style.display = "none";
+    disposalBtn.style.display = "none";
+}
+
+/* 🔄 IMPORTANT: LOAD DATA */
+loadChain();
+
+}
+
+function logout()
+{
+    currentRole = "";
+
+    // hide dashboard
+    document.getElementById("mainSystem").style.display = "none";
+
+    // show login page
+    document.getElementById("loginPage").style.display = "flex";
+
+    // reset dropdown
+    document.getElementById("roleSelect").value = "";
+
+    // clear inputs (optional but clean)
+    document.getElementById("batchId").value = "";
+    document.getElementById("searchBatch").value = "";
+    document.getElementById("timelineOutput").innerHTML = "";
+}
+
+function toggleSidebar(){
+
+const sidebar=document.querySelector(".sidebar");
+const container=document.querySelector(".container");
+
+sidebar.classList.toggle("active");
+container.classList.toggle("shifted");
+
+}
+
+function showSection(section){
+
+document.querySelectorAll(".section").forEach(s=>s.style.display="none");
+
+if(section==="dashboard") dashboardSection.style.display="block";
+if(section==="analytics") analyticsSection.style.display="block";
+if(section==="tracking") trackingSection.style.display="block";
+if(section==="blockchain") blockchainSection.style.display="block";
+
+document.querySelectorAll(".sidebar button").forEach(btn=>{
+    btn.classList.remove("active");
+});
+event.target.classList.add("active");
+
+}
+
+async function updateStatus(actor,status){
+
+const batchId=batchIdInput();
+
+/* 🔐 ROLE CHECK */
+if(currentRole !== actor)
+{
+    alert("❌ Unauthorized action for your role");
+    return;
+}
+
+if(batchId===""){
+alert("Enter Batch ID");
+return;
+}
+
+/* prevent reuse of destroyed batch */
+
+for(let i = blockchainData.length - 1; i >= 0; i--)
+{
+    if(blockchainData[i].batchId === batchId)
+    {
+        if(blockchainData[i].status === "Destroyed")
+        {
+            alert("⚠ This batch has already been destroyed and cannot be processed again.");
+            return;
+        }
+        break;
+    }
+}
+
+await fetch("http://localhost:3000/update",{
+method:"POST",
+headers:{"Content-Type":"application/json"},
+body:JSON.stringify({batchId,actor,status})
+});
+
+if(actor==="Retailer"){
+retailerBtn.disabled=true;
+distributorBtn.disabled=false;
+}
+
+if(actor==="Distributor"){
+distributorBtn.disabled=true;
+manufacturerBtn.disabled=false;
+}
+
+if(actor==="Manufacturer"){
+manufacturerBtn.disabled=true;
+disposalBtn.disabled=false;
+}
+
+if(actor==="Disposal"){
+
+disposalBtn.disabled=true;
+newBatchBtn.disabled=false;
+
+if(confirm("Download destruction certificate?"))
+downloadCertificate(batchId);
+
+}
+alert("Status updated successfully!");
+
+generateQR(batchId);
+
+loadChain();
+
+}
+
+function batchIdInput(){
+return document.getElementById("batchId").value;
+}
+
+function getStatusColor(status){
+    if(status==="Expired") return "#ef4444";
+    if(status==="Collected") return "#f59e0b";
+    if(status==="Verified") return "#22c55e";
+    if(status==="Destroyed") return "#64748b";
+
+}
+
+function generateQR(batchId){
+
+qrcode.innerHTML="";
+
+const url=window.location.origin+"?batch="+batchId;
+
+new QRCode(qrcode,{
+text:url,
+width:120,
+height:120
+});
+
+}
+
+function resetWorkflow(){
+
+document.getElementById("batchId").value="";
+retailerBtn.disabled=false;
+distributorBtn.disabled=true;
+manufacturerBtn.disabled=true;
+disposalBtn.disabled=true;
+newBatchBtn.disabled=true;
+
+}
+
+function checkIntegrity(chain){
+
+for(let i=1;i<chain.length;i++){
+
+if(chain[i].previousHash!==chain[i-1].hash)
+return false;
+
+}
+
+return true;
+
+}
+
+function tamperChain()
+{
+    if(blockchainData.length > 1)
+    {
+        blockchainData[blockchainData.length - 1].previousHash = "HACKED DATA";
+
+        const valid = checkIntegrity(blockchainData);
+
+        if(valid)
+        {
+            chainStatus.innerHTML = "✔ Blockchain Integrity: VALID";
+            chainStatus.style.color = "green";
+        }
+        else
+        {
+            chainStatus.innerHTML = "⚠ Blockchain Integrity: TAMPERED";
+            chainStatus.style.color = "red";
+        }
+
+        alert("Blockchain data has been tampered for demo purposes!");
+    }
+}
+
+function viewBatchHistory(){
+
+const batch=document.getElementById("searchBatch").value;
+
+let timeline=[];
+
+blockchainData.forEach(block=>{
+    if(block.batchId===batch) 
+    {
+        timeline.push(
+        `<span>
+        ${block.status}
+        <br>
+        <small>${new Date(block.timestamp).toLocaleString()}</small>
+        </span>`
+        );
+    }
+});
+
+timelineOutput.innerHTML = timeline.join(" ➜ ");
+timelineOutput.scrollIntoView({ behavior: "smooth" });
+
+}
+
+function downloadCertificate(batchId){
+
+const {jsPDF}=window.jspdf;
+
+const doc=new jsPDF();
+
+doc.text("CERTIFICATE OF DESTRUCTION",20,30);
+doc.text("Batch ID: "+batchId,20,50);
+doc.text("Destroyed by Disposal Facility",20,70);
+doc.text("Timestamp: "+new Date().toLocaleString(),20,90);
+doc.text("Verified via Blockchain Ledger",20,110);
+
+doc.save("Destruction_Certificate_"+batchId+".pdf");
+
+}
+
+async function loadChain(){
+
+const res = await fetch("http://localhost:3000/chain");
+blockchainData = await res.json();
+
+/* integrity check */
+
+const valid = checkIntegrity(blockchainData);
+
+chainStatus.innerHTML =
+valid ? "✔ Blockchain Integrity: VALID"
+: "⚠ Blockchain Integrity: TAMPERED";
+
+chainStatus.style.color = valid ? "green" : "red";
+
+/* block count */
+
+totalBlocks.innerText = blockchainData.length;
+
+/* analytics counters */
+
+let expired=0,collected=0,verified=0,destroyed=0;
+
+const latest={};
+
+blockchainData.forEach(block=>{
+
+if(block.batchId!=="GENESIS"){
+
+latest[block.batchId]={
+status:block.status,
+actor:block.actor
+};
+
+if(block.status==="Expired") expired++;
+if(block.status==="Collected") collected++;
+if(block.status==="Verified") verified++;
+if(block.status==="Destroyed") destroyed++;
+
+}
+
+});
+
+expiredCount.innerText=expired;
+collectedCount.innerText=collected;
+verifiedCount.innerText=verified;
+destroyedCount.innerText=destroyed;
+
+/* total batches */
+
+totalBatches.innerText=Object.keys(latest).length;
+
+/* batch tracking table */
+
+batchTable.innerHTML="<tr><th>Batch ID</th><th>Status</th><th>Actor</th></tr>";
+
+for(const batch in latest){
+
+const row=batchTable.insertRow();
+
+row.insertCell(0).innerText=batch;
+row.insertCell(1).innerHTML = `
+<span style="
+padding:4px 10px;
+border-radius:12px;
+background:${getStatusColor(latest[batch].status)};
+color:white;
+font-size:12px;">
+${latest[batch].status}
+</span> `;
+row.insertCell(2).innerText=latest[batch].actor;
+
+}
+
+/* blockchain explorer */
+
+output.innerHTML="";
+
+blockchainData.forEach((block,index)=>{
+
+const div=document.createElement("div");
+
+let statusClass="";
+
+if(block.batchId == "GENESIS")
+{
+    statusClass = "genesis";
+}
+else if(block.status==="Expired") statusClass="expired";
+else if(block.status==="Collected") statusClass="collected";
+else if(block.status==="Verified") statusClass="verified";
+else if(block.status==="Destroyed") statusClass="destroyed";
+
+div.className="block "+statusClass;
+
+if(block.batchId === "GENESIS")
+{
+    div.innerHTML =
+    "<b>🌱 Genesis Block</b><br><br>"+
+    "System Initialization<br>"+
+    "Blockchain Started<br><br>"+
+    "Time: "+new Date(block.timestamp).toLocaleString()+"<br><br>"+
+    "Hash:<br>"+block.hash.substring(0,15)+"...";
+}
+else
+{
+    div.innerHTML =
+    "<b>Block #"+block.index+"</b><br><br>"+
+    "Batch: "+block.batchId+"<br>"+
+    "Actor: "+block.actor+"<br>"+
+    "Status: "+block.status+"<br><br>"+
+    "Time: "+new Date(block.timestamp).toLocaleString()+"<br><br>"+
+    "Prev Hash:<br>"+block.previousHash.substring(0,15)+"...<br><br>"+
+    "Hash:<br>"+block.hash.substring(0,15)+"...";
+}
+
+output.appendChild(div);
+
+if(index<blockchainData.length-1){
+
+const arrow=document.createElement("div");
+arrow.className="arrow";
+arrow.innerHTML="➡️";
+output.appendChild(arrow);
+
+}
+
+});
+
+}
+
+function resetBlockchain()
+{
+    if(confirm("Reset the entire blockchain?"))
+    {
+        fetch("http://localhost:3000/reset",{method:"POST"})
+        .then(()=>loadChain());
+    }
+}
+
+function exportReport(){
+
+const blob=new Blob([JSON.stringify(blockchainData,null,2)],{type:"application/json"});
+
+const url=URL.createObjectURL(blob);
+
+const a=document.createElement("a");
+
+a.href=url;
+a.download="blockchain_audit_report.json";
+
+a.click();
+
+}
+
+loadChain();
+
+document.querySelectorAll(".card-box").forEach((el,i)=>{
+    el.style.opacity = 0;
+    el.style.transform = "translateY(20px)";
+    setTimeout(()=>{
+        el.style.transition = "all 0.5s ease";
+        el.style.opacity = 1;
+        el.style.transform = "translateY(0)";
+    }, i * 150);
+})
+
+showSection("dashboard");
+
+</script>
+
+</div>
+
+</body>
+</html>
