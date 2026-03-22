@@ -24,6 +24,21 @@ background:linear-gradient(135deg,#eef2ff,#e0f2fe);
 color:#1f2937;
 }
 
+body{
+    animation: fadeIn 0.5s ease;
+}
+
+@keyframes fadeIn {
+    from { 
+        opacity: 0; 
+        transform: translateY(10px); 
+        }
+    to { 
+        opacity: 1; 
+        transform: translateY(0); 
+        }
+}
+
 /* MAIN LAYOUT */
 
 .container{
@@ -162,10 +177,35 @@ background:linear-gradient(135deg,#2563eb,#6366f1);
 color:white;
 border-radius:10px;
 cursor:pointer;
+position: relative;
+overflow: hidden;
 font-size:14px;
 font-weight:600;
 margin:8px 8px 8px 0;
 transition:all .25s ease;
+}
+
+button::after
+{
+content: "";
+position: absolute;
+width: 0;
+height: 0;
+background: rgba(255,255,255,0.4);
+border-radius: 50%;
+transform: translate(-50%, -50%);
+top: 50%;
+left: 50%;
+opacity: 0;
+transition: width 0.4s ease, height 0.4s ease, opacity 0.4s;
+}
+
+button:active::after
+{
+width: 200px;
+height: 200px;
+opacity: 1;
+transition: 0s;
 }
 
 button:hover
@@ -258,20 +298,43 @@ transform:translateY(-5px);
 }
 
 .card-box{
-background: rgba(255,255,255,0.7);
-backdrop-filter: blur(12px);
+background: rgba(255,255,255,0.6);
+backdrop-filter: blur(20px);
 padding:25px;
 border-radius:16px;
-box-shadow:0 10px 25px rgba(0,0,0,.08);
+box-shadow:0 10px 30px rgba(0,0,0,.1);
 margin-bottom:25px;
+transition: all 0.3s ease;
 }
 
-
+.card-box:hover{
+transform: translateY(-6px);        
+box-shadow: 0 20px 40px rgba(0,0,0,.15);
+}
 
 .card h2{
 font-size:26px;
 font-weight:700;
 color:#2563eb;
+}
+
+.bg-animation {
+position: fixed;
+top: 0;
+left: 0;
+width: 100%;
+height: 100%;
+z-index: -1;
+background: linear-gradient(120deg, #6366f1, #3b82f6, #06b6d4);
+background-size: 300% 300%;
+animation: gradientMove 12s ease infinite;
+opacity: 0.15;
+}
+
+@keyframes gradientMove {
+0% { background-position: 0% 50%; }
+50% { background-position: 100% 50%; }
+100% { background-position: 0% 50%; }
 }
 
 /* TABLE */
@@ -290,6 +353,16 @@ border:1px solid #e2e8f0;
 
 th{
 background:#f1f5f9;
+}
+
+#bgCanvas
+{
+position: fixed;
+top: 0;
+left: 0;
+width: 100%;
+height: 100%;
+z-index: -1;
 }
 
 #loginPage h2{
@@ -332,6 +405,9 @@ font-weight:600;
 </head>
 
 <body>
+
+<canvas id="bgCanvas"> </canvas>
+<div class="bg-animation"> </div>
 
 <div id="loginPage" style="display:flex;justify-content:center;align-items:center;height:100vh;flex-direction:column">
 
@@ -1011,6 +1087,49 @@ document.querySelectorAll(".card-box").forEach((el,i)=>{
 })
 
 showSection("dashboard");
+
+const canvas = document.getElementById("bgCanvas");
+const ctx = canvas.getContext("2d");
+
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+
+let particles = [];
+
+for(let i = 0; i < 60; i++)
+{
+    particles.push({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height,
+        radius: Math.random() * 2 + 1,
+        dx: (Math.random() - 0.5) * 0.5,
+        dy: (Math.random() - 0.5) * 0.5
+    });
+}
+
+function animate()
+{
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    particles.forEach(p =>
+    {
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+        ctx.fillStyle = "rgba(37,99,235,0.3)";
+        ctx.fill();
+
+        p.x += p.dx;
+        p.y += p.dy;
+
+        // bounce
+        if(p.x < 0 || p.x > canvas.width) p.dx *= -1;
+        if(p.y < 0 || p.y > canvas.height) p.dy *= -1;
+    });
+
+    requestAnimationFrame(animate);
+}
+
+animate();
 
 </script>
 
