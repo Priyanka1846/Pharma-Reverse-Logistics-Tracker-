@@ -625,7 +625,7 @@ event.target.classList.add("active");
 
 async function updateStatus(actor,status){
 
-const batchId=batchIdInput();
+const batchId=batchIdInput().trim();
 
 /* 🔐 ROLE CHECK */
 if(currentRole !== actor)
@@ -654,7 +654,7 @@ for(let i = blockchainData.length - 1; i >= 0; i--)
     }
 }
 
-// 🔍 find last status of this batch
+// 🔍 get last status of batch
 let lastStatus = null;
 
 for(let i = blockchainData.length - 1; i >= 0; i--)
@@ -666,30 +666,29 @@ for(let i = blockchainData.length - 1; i >= 0; i--)
     }
 }
 
-// 🚫 validation rules
+// 🚫 INVALID BATCH CHECK (MOST IMPORTANT)
+if(lastStatus === null && actor !== "Retailer")
+{
+    alert("❌ Invalid Batch ID. Start from Retailer first.");
+    return;
+}
 
+// 🚫 WORKFLOW VALIDATION
 if(actor === "Distributor" && lastStatus !== "Expired")
 {
-    alert("❌ Batch must be marked Expired first by Retailer");
+    alert("❌ Must be Expired by Retailer first.");
     return;
 }
 
 if(actor === "Manufacturer" && lastStatus !== "Collected")
 {
-    alert("❌ Batch must be Collected by Distributor first");
+    alert("❌ Must be Collected by Distributor first.");
     return;
 }
 
 if(actor === "Disposal" && lastStatus !== "Verified")
 {
-    alert("❌ Batch must be Verified by Manufacturer first");
-    return;
-}
-
-// 🚫 if batch doesn't exist
-if(actor !== "Retailer" && lastStatus === null)
-{
-    alert("❌ Invalid Batch ID. Start from Retailer.");
+    alert("❌ Must be Verified by Manufacturer first.");
     return;
 }
 
