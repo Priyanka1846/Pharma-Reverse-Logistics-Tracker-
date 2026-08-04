@@ -1,1139 +1,425 @@
 <!DOCTYPE html>
-<html>
-
+<html lang="en" data-theme="dark">
 <head>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-<link rel="icon" href="https://cdn-icons-png.flaticon.com/512/3076/3076129.png">
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reverse Pharma Logistics Tracker</title>
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-
-<style>
-
-body{
-background: linear-gradient(135deg,#eef2ff,#e0f2fe);
-background-image: radial-gradient(circle at 1px 1px, rgba(0,0,0,0.05) 1px, transparent 0);
-background-size: 20px 20px;
-font-family:"Inter",sans-serif;
-font-size:15px;
-margin:0;
-background:linear-gradient(135deg,#eef2ff,#e0f2fe);
-color:#1f2937;
-}
-
-body{
-    animation: fadeIn 0.5s ease;
-}
-
-@keyframes fadeIn {
-    from { 
-        opacity: 0; 
-        transform: translateY(10px); 
-        }
-    to { 
-        opacity: 1; 
-        transform: translateY(0); 
-        }
-}
-
-/* MAIN LAYOUT */
-
-.container{
-max-width:1100px;
-margin:auto;
-padding:30px 20px;
-transition:0.3s;
-}
-
-.container.shifted{
-margin-left:280px;
-}
-
-/* HEADER */
-
-.header{
-background:rgba(255,255,255,0.6);
-backdrop-filter:blur(15px);
-max-width: 1100px;
-margin:auto;
-padding:25px;
-border-radius:18px;
-box-shadow:0 10px 30px rgba(0,0,0,.08);
-margin-bottom:30px;
-display:flex;
-align-items:center;
-gap:15px;
-}
-
-.header h2{
-margin:0;
-font-size:28px;
-font-weight:600;
-}
-
-/* HAMBURGER */
-
-.menuBtn{
-font-size:22px;
-cursor:pointer;
-background:none;
-border:none;
-color:#2563eb;
-}
-
-/* SIDEBAR */
-
-.sidebar
-{
-background: linear-gradient(180deg,#1e293b,#0f172a);
-position:fixed;
-left:-300px;
-top:0;
-height:100%;
-width:240px;
-background:#1e293b;
-color:white;
-box-shadow:6px 0 20px rgba(0,0,0,.2);
-padding:25px;
-transition:0.3s;
-z-index:1000;
-}
-
-.sidebar h3
-{
-color:#94a3b8;
-margin-bottom:20px;
-}
-
-/* when sidebar is open */
-.sidebar.active{
-left:0
-}
-
-.sidebar button
-{
-font-size:15px;
-font-weight:500;
-width:100%;
-margin-bottom:12px;
-background:#334155;
-border-radius:8px;
-text-align:left;
-padding:12px;
-transition:0.2s;
-}
-
-.sidebar button:hover
-{
-background:#2563eb;
-transform:translateX(5px);
-}
-
-/* SECTIONS */
-
-.section{
-margin-bottom: 30px;
-display:none;
-}
-
-h3{
-display:flex;
-align-items: center;
-gap:10px;
-font-size:22px;
-font-weight:600;
-margin-bottom:18px;
-margin-top:30px;
-border-left:4px solid #2563eb;
-padding-left:10px;
-}
-
-input{
-padding:12px;
-margin:10px 0;
-width:250px;
-border:1px solid #d1d5db;
-border-radius:10px;
-outline: none;
-transition:0.2s;
-}
-
-input:focus{
-border-color:#2563eb;
-box-shadow: 0 0 0 3px rgba(37,99,235,0.2);
-}
-
-
-/* BUTTON */
-
-button
-{
-padding:12px 18px;
-border:none;
-background:linear-gradient(135deg,#2563eb,#6366f1);
-color:white;
-border-radius:10px;
-cursor:pointer;
-position: relative;
-overflow: hidden;
-font-size:14px;
-font-weight:600;
-margin:8px 8px 8px 0;
-transition:all .25s ease;
-}
-
-button::after
-{
-content: "";
-position: absolute;
-width: 0;
-height: 0;
-background: rgba(255,255,255,0.4);
-border-radius: 50%;
-transform: translate(-50%, -50%);
-top: 50%;
-left: 50%;
-opacity: 0;
-transition: width 0.4s ease, height 0.4s ease, opacity 0.4s;
-}
-
-button:active::after
-{
-width: 200px;
-height: 200px;
-opacity: 1;
-transition: 0s;
-}
-
-button:hover
-{
-transform:translateY(-3px);
-box-shadow:0 10px 20px rgba(99,102,241,.4);
-}
-
-button:disabled{
-background:#cbd5e1;
-cursor:not-allowed;
-}
-
-.primary-btn{
-background: linear-gradient(135deg,#2563eb,#6366f1);
-}
-
-.secondary-btn{
-background: #e2e8f0;
-color: #1f2937; 
-}
-
-/* BLOCKCHAIN */
-
-.chain{
-display:flex;
-align-items: center;
-gap: 15px;
-overflow-x:auto;
-padding-bottom: 10px;
-margin-top:20px;
-}
-
-.block
-{
-background:white;
-border-radius:14px;
-padding:18px;
-margin:12px;
-width:240px;
-box-shadow:0 10px 25px rgba(0,0,0,.1);
-border:1px solid #e5e7eb;
-font-size:13px;
-transition:all .25s ease;
-}
-
-.block:hover
-{
-transform:translateY(-8px) scale(1.04);
-box-shadow:0 20px 40px rgba(0,0,0,.2);
-}
-
-.block b{
-color:#2563eb;
-}
-
-.arrow{
-display: flex;
-align-items: center;
-justify-content: center;
-font-size:26px;
-align-self:center;
-}
-
-.expired{border-left:6px solid #ef4444;}
-.collected{border-left:6px solid #f59e0b;}
-.verified{border-left:6px solid #22c55e;}
-.destroyed{border-left:6px solid #111827;}
-
-/* ANALYTICS */
-
-.analytics{
-display:grid;
-grid-template-columns: repeat(auto-fit,minmax(180px,1fr));
-gap:20px;
-}
-
-.card{
-background:linear-gradient(135deg,#ffffff,#f1f5f9);
-padding:20px;
-border-radius:14px;
-box-shadow:0 8px 18px rgba(0,0,0,.08);
-width:180px;
-text-align:center;
-transition:0.3s;
-}
-
-.card:hover{
-transform:translateY(-5px);
-}
-
-.card-box{
-background: rgba(255,255,255,0.6);
-backdrop-filter: blur(20px);
-padding:25px;
-border-radius:16px;
-box-shadow:0 10px 30px rgba(0,0,0,.1);
-margin-bottom:25px;
-transition: all 0.3s ease;
-}
-
-.card-box:hover{
-transform: translateY(-6px);        
-box-shadow: 0 20px 40px rgba(0,0,0,.15);
-}
-
-.card h2{
-font-size:26px;
-font-weight:700;
-color:#2563eb;
-}
-
-.bg-animation {
-position: fixed;
-top: 0;
-left: 0;
-width: 100%;
-height: 100%;
-z-index: -1;
-background: linear-gradient(120deg, #6366f1, #3b82f6, #06b6d4);
-background-size: 300% 300%;
-animation: gradientMove 12s ease infinite;
-opacity: 0.15;
-}
-
-@keyframes gradientMove {
-0% { background-position: 0% 50%; }
-50% { background-position: 100% 50%; }
-100% { background-position: 0% 50%; }
-}
-
-/* TABLE */
-
-table{
-border-collapse:collapse;
-margin-top:12px;
-width:420px;
-background:white;
-}
-
-th,td{
-padding:10px;
-border:1px solid #e2e8f0;
-}
-
-th{
-background:#f1f5f9;
-}
-
-#bgCanvas
-{
-position: fixed;
-top: 0;
-left: 0;
-width: 100%;
-height: 100%;
-z-index: -1;
-}
-
-#loginPage h2{
-font-size:32px;
-margin-bottom:20px;
-}
-
-#loginPage select{
-border-radius:6px;
-border:1px solid #ccc;
-}
-
-#loginPage button{
-padding:12px 20px;
-font-size:15px;
-}
-
-#timelineOutput span{
-display:inline-block;
-margin:5px;
-padding:7px 12px;
-background:#2563eb;
-color:white;
-border-radius:6px;
-}
-
-#chainStatus{
-font-size:20px;
-font-weight:600;
-}
-
-.genesis
-{
-border-left:6px solid purple;
-background:linear-gradient(135deg,#ede9fe,#f5f3ff);
-font-weight:600;
-}
-
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ReLogix Pro - Product-Grade Reverse Logistics & Blockchain Platform</title>
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- CDN Libraries: Chart.js, QRCode.js, jsPDF -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  
+  <!-- Application Styles -->
+  <link rel="stylesheet" href="/css/styles.css">
+  <link rel="stylesheet" href="/css/dashboard.css">
 </head>
-
 <body>
 
-<canvas id="bgCanvas"> </canvas>
-<div class="bg-animation"> </div>
-
-<div id="loginPage" style="display:flex;justify-content:center;align-items:center;height:100vh;flex-direction:column">
-
-<h2>Reverse Pharma Logistics System</h2>
-
-<h3>Login As</h3>
-
-<select id="roleSelect" style="padding:10px;font-size:16px">
-<option value="">Select Role</option>
-<option value="Retailer">Retailer</option>
-<option value="Distributor">Distributor</option>
-<option value="Manufacturer">Manufacturer</option>
-<option value="Disposal">Disposal Facility</option>
-<option value="Admin">Admin</option>
-</select>
-
-<br><br>
-
-<button onclick="enterSystem()">Enter Dashboard</button>
-
-</div>
-
-<!-- SIDEBAR -->
-
-<div class="sidebar">
-
-<h3>Menu</h3>
-
-<button onclick="showSection('dashboard');toggleSidebar()">Dashboard</button>
-<button onclick="showSection('analytics');toggleSidebar()">Admin Analytics</button>
-<button onclick="showSection('tracking');toggleSidebar()">Batch Tracking</button>
-<button onclick="showSection('blockchain');toggleSidebar()">Blockchain Explorer</button>
-
-</div>
-
-<div id="mainSystem" class="container" style="display:none">
-
-<div class="header">
-
-<button class="menuBtn" onclick="toggleSidebar()">☰</button>
-
-<h2>Pharmaceutical Reverse Logistics Tracker</h2>
-
-<button onclick="logout()" style="
-margin-left:auto;
-background:#ef4444;
-padding:10 px 14px;
-border-radius:8px;
-font-size:13px;">
-Logout
-</button>
-
-</div>
-
-
-<!-- DASHBOARD -->
-
-<div id="dashboardSection" class="section">
-
-<p id="roleDisplay"></p>
-
-<h3 id="chainStatus">Blockchain Integrity: Checking...</h3>
-
-<div class="card-box">
-<h3>Blockchain Explorer</h3>
-<p style="color:#64748b;font-size:13px;margin-bottom:-8px;">
-Track total blocks and batches in the system.
-</p>
-
-<p>Total Blocks: <span id="totalBlocks">0</span></p>
-<p>Total Batches: <span id="totalBatches">0</span></p>
-
-<input id="batchId" placeholder="Enter Batch ID">
-</div>
-
-<div class="card-box">
-<h3>QR Code Tracking</h3>
-<div id="qrcode"></div>
-
-<button id="retailerBtn" onclick="updateStatus('Retailer','Expired')">Retailer → Mark Expired</button>
-<button id="distributorBtn" onclick="updateStatus('Distributor','Collected')" disabled>Distributor → Collect Batch</button>
-<button id="manufacturerBtn" onclick="updateStatus('Manufacturer','Verified')" disabled>Manufacturer → Verify</button>
-<button id="disposalBtn" onclick="updateStatus('Disposal','Destroyed')" disabled>Disposal → Destroy</button>
-
-<button id="newBatchBtn" onclick="resetWorkflow()" disabled>Start New Batch</button>
-<button onclick="tamperChain()">Simulate Tampering</button>
-<button onclick="resetBlockchain()">Reset Blockchain (Demo)</button>
-<button onclick="exportReport()">Download Audit Report</button>
-
-</div>
-</div>
-
-
-<!-- ANALYTICS -->
-
-<div id="analyticsSection" class="section">
-
-<div class="card-box">
-
-<h3>Admin Analytical Dashboard</h3>
-
-<div class="analytics">
-
-<div class="card">
-Expired
-<h2 id="expiredCount">0</h2>
-</div>
-
-<div class="card">
-Collected
-<h2 id="collectedCount">0</h2>
-</div>
-
-<div class="card">
-Verified
-<h2 id="verifiedCount">0</h2>
-</div>
-
-<div class="card">
-Destroyed
-<h2 id="destroyedCount">0</h2>
-</div>
-
-</div>  
-
-</div>
-</div>
-
-
-<!-- TRACKING -->
-
-<div id="trackingSection" class="section">
-
-<div class="card-box">
-
-<h3>Batch Tracking Dashboard</h3>
-
-<table id="batchTable">
-<tr>
-<th>Batch ID</th>
-<th>Status</th>
-<th>Actor</th>
-</tr>
-</table>
-
-<h3>Batch Lifecycle Viewer</h3>
-
-<input id="searchBatch" placeholder="Enter Batch ID">
-
-<button onclick="viewBatchHistory()">View Timeline</button>
-
-<div id="timelineOutput"></div>
-
-</div>
-
-</div>  
-
-<!-- BLOCKCHAIN -->
-
-<div id="blockchainSection" class="section">
-
-<h3>Blockchain History</h3>
-
-<div class="chain" id="output"></div>
-
-</div>
-
-
-<script>
-
-let blockchainData=[];
-let currentRole="";
-
-function enterSystem()
-{
-const role = document.getElementById("roleSelect").value;
-
-if(role==="")
-{
-alert("Please select a role");
-return;
-}
-
-currentRole = role;
-
-document.getElementById("loginPage").style.display="none";
-document.getElementById("mainSystem").style.display="block";
-
-roleDisplay.innerHTML = `
-<span style="
-background:#2563eb;
-color:white;
-padding:6px 12px;
-border-radius:20px;
-font-size:13px;
-font-weight:600;">
-👤 Logged in as <b>${role}</b>
-</span`;
-
-// enable ONLY current role button
-retailerBtn.disabled = (role !== "Retailer");
-distributorBtn.disabled = (role !== "Distributor");
-manufacturerBtn.disabled = (role !== "Manufacturer");
-disposalBtn.disabled = (role !== "Disposal");
-
-// admin can access all
-if(role === "Admin")
-{
-    retailerBtn.disabled = false;
-    distributorBtn.disabled = false;
-    manufacturerBtn.disabled = false;
-    disposalBtn.disabled = false;
-}
-
-newBatchBtn.disabled = true;
-
-/* 👀 OPTIONAL UI HIDE (clean UI) */
-
-/* first show all */
-retailerBtn.style.display = "inline-block";
-distributorBtn.style.display = "inline-block";
-manufacturerBtn.style.display = "inline-block";
-disposalBtn.style.display = "inline-block";
-
-/* then hide others */
-if(role !== "Admin")
-{
-    if(role !== "Retailer") retailerBtn.style.display = "none";
-    if(role !== "Distributor") distributorBtn.style.display = "none";
-    if(role !== "Manufacturer") manufacturerBtn.style.display = "none";
-    if(role !== "Disposal") disposalBtn.style.display = "none";
-}
-
-if(role === "Admin")
-{
-    retailerBtn.style.display = "none";
-    distributorBtn.style.display = "none";
-    manufacturerBtn.style.display = "none";
-    disposalBtn.style.display = "none";
-}
-
-/* 🔄 IMPORTANT: LOAD DATA */
-loadChain();
-
-}
-
-function logout()
-{
-    currentRole = "";
-
-    // hide dashboard
-    document.getElementById("mainSystem").style.display = "none";
-
-    // show login page
-    document.getElementById("loginPage").style.display = "flex";
-
-    // reset dropdown
-    document.getElementById("roleSelect").value = "";
-
-    // clear inputs (optional but clean)
-    document.getElementById("batchId").value = "";
-    document.getElementById("searchBatch").value = "";
-    document.getElementById("timelineOutput").innerHTML = "";
-}
-
-function toggleSidebar(){
-
-const sidebar=document.querySelector(".sidebar");
-const container=document.querySelector(".container");
-
-sidebar.classList.toggle("active");
-container.classList.toggle("shifted");
-
-}
-
-function showSection(section){
-
-document.querySelectorAll(".section").forEach(s=>s.style.display="none");
-
-if(section==="dashboard") dashboardSection.style.display="block";
-if(section==="analytics") analyticsSection.style.display="block";
-if(section==="tracking") trackingSection.style.display="block";
-if(section==="blockchain") blockchainSection.style.display="block";
-
-document.querySelectorAll(".sidebar button").forEach(btn=>{
-    btn.classList.remove("active");
-});
-event.target.classList.add("active");
-
-}
-
-async function updateStatus(actor,status){
-
-const batchId=batchIdInput().trim();
-
-/* 🔐 ROLE CHECK */
-if(currentRole !== actor)
-{
-    alert("❌ Unauthorized action for your role");
-    return;
-}
-
-if(batchId===""){
-alert("Enter Batch ID");
-return;
-}
-
-/* prevent reuse of destroyed batch */
-
-for(let i = blockchainData.length - 1; i >= 0; i--)
-{
-    if(blockchainData[i].batchId === batchId)
-    {
-        if(blockchainData[i].status === "Destroyed")
-        {
-            alert("⚠ This batch has already been destroyed and cannot be processed again.");
-            return;
-        }
-        break;
-    }
-}
-
-// 🔍 get last status of batch
-let lastStatus = null;
-
-for(let i = blockchainData.length - 1; i >= 0; i--)
-{
-    if(blockchainData[i].batchId === batchId)
-    {
-        lastStatus = blockchainData[i].status;
-        break;
-    }
-}
-
-// 🚫 INVALID BATCH CHECK (MOST IMPORTANT)
-if(lastStatus === null && actor !== "Retailer")
-{
-    alert("❌ Invalid Batch ID. Start from Retailer first.");
-    return;
-}
-
-// 🚫 WORKFLOW VALIDATION
-if(actor === "Distributor" && lastStatus !== "Expired")
-{
-    alert("❌ Must be Expired by Retailer first.");
-    return;
-}
-
-if(actor === "Manufacturer" && lastStatus !== "Collected")
-{
-    alert("❌ Must be Collected by Distributor first.");
-    return;
-}
-
-if(actor === "Disposal" && lastStatus !== "Verified")
-{
-    alert("❌ Must be Verified by Manufacturer first.");
-    return;
-}
-
-await fetch("/update",{
-method:"POST",
-headers:{"Content-Type":"application/json"},
-body:JSON.stringify({batchId,actor,status})
-});
-
-if(actor==="Retailer"){
-retailerBtn.disabled=true;
-distributorBtn.disabled=false;
-}
-
-if(actor==="Distributor"){
-distributorBtn.disabled=true;
-manufacturerBtn.disabled=false;
-}
-
-if(actor==="Manufacturer"){
-manufacturerBtn.disabled=true;
-disposalBtn.disabled=false;
-}
-
-if(actor==="Disposal"){
-
-disposalBtn.disabled=true;
-newBatchBtn.disabled=false;
-
-if(confirm("Download destruction certificate?"))
-downloadCertificate(batchId);
-
-}
-alert("Status updated successfully!");
-
-generateQR(batchId);
-
-loadChain();
-
-}
-
-function batchIdInput(){
-return document.getElementById("batchId").value;
-}
-
-function getStatusColor(status){
-    if(status==="Expired") return "#ef4444";
-    if(status==="Collected") return "#f59e0b";
-    if(status==="Verified") return "#22c55e";
-    if(status==="Destroyed") return "#64748b";
-
-}
-
-function generateQR(batchId){
-
-qrcode.innerHTML="";
-
-const url=window.location.origin+"?batch="+batchId;
-
-new QRCode(qrcode,{
-text:url,
-width:120,
-height:120
-});
-
-}
-
-function resetWorkflow(){
-
-document.getElementById("batchId").value="";
-retailerBtn.disabled=false;
-distributorBtn.disabled=true;
-manufacturerBtn.disabled=true;
-disposalBtn.disabled=true;
-newBatchBtn.disabled=true;
-
-}
-
-function checkIntegrity(chain){
-
-for(let i=1;i<chain.length;i++){
-
-if(chain[i].previousHash!==chain[i-1].hash)
-return false;
-
-}
-
-return true;
-
-}
-
-function tamperChain()
-{
-    if(blockchainData.length > 1)
-    {
-        blockchainData[blockchainData.length - 1].previousHash = "HACKED DATA";
-
-        const valid = checkIntegrity(blockchainData);
-
-        if(valid)
-        {
-            chainStatus.innerHTML = "✔ Blockchain Integrity: VALID";
-            chainStatus.style.color = "green";
-        }
-        else
-        {
-            chainStatus.innerHTML = "⚠ Blockchain Integrity: TAMPERED";
-            chainStatus.style.color = "red";
-        }
-
-        alert("Blockchain data has been tampered for demo purposes!");
-    }
-}
-
-function viewBatchHistory(){
-
-const batch=document.getElementById("searchBatch").value;
-
-let timeline=[];
-
-blockchainData.forEach(block=>{
-    if(block.batchId===batch) 
-    {
-        timeline.push(
-        `<span>
-        ${block.status}
-        <br>
-        <small>${new Date(block.timestamp).toLocaleString()}</small>
-        </span>`
-        );
-    }
-});
-
-timelineOutput.innerHTML = timeline.join(" ➜ ");
-timelineOutput.scrollIntoView({ behavior: "smooth" });
-
-}
-
-function downloadCertificate(batchId){
-
-const {jsPDF}=window.jspdf;
-
-const doc=new jsPDF();
-
-doc.text("CERTIFICATE OF DESTRUCTION",20,30);
-doc.text("Batch ID: "+batchId,20,50);
-doc.text("Destroyed by Disposal Facility",20,70);
-doc.text("Timestamp: "+new Date().toLocaleString(),20,90);
-doc.text("Verified via Blockchain Ledger",20,110);
-
-doc.save("Destruction_Certificate_"+batchId+".pdf");
-
-}
-
-async function loadChain(){
-
-const res = await fetch("/chain");
-blockchainData = await res.json();
-
-/* integrity check */
-
-const valid = checkIntegrity(blockchainData);
-
-chainStatus.innerHTML =
-valid ? "✔ Blockchain Integrity: VALID"
-: "⚠ Blockchain Integrity: TAMPERED";
-
-chainStatus.style.color = valid ? "green" : "red";
-
-/* block count */
-
-totalBlocks.innerText = blockchainData.length;
-
-/* analytics counters */
-
-let expired=0,collected=0,verified=0,destroyed=0;
-
-const latest={};
-
-blockchainData.forEach(block=>{
-
-if(block.batchId!=="GENESIS"){
-
-latest[block.batchId]={
-status:block.status,
-actor:block.actor
-};
-
-if(block.status==="Expired") expired++;
-if(block.status==="Collected") collected++;
-if(block.status==="Verified") verified++;
-if(block.status==="Destroyed") destroyed++;
-
-}
-
-});
-
-expiredCount.innerText=expired;
-collectedCount.innerText=collected;
-verifiedCount.innerText=verified;
-destroyedCount.innerText=destroyed;
-
-/* total batches */
-
-totalBatches.innerText=Object.keys(latest).length;
-
-/* batch tracking table */
-
-batchTable.innerHTML="<tr><th>Batch ID</th><th>Status</th><th>Actor</th></tr>";
-
-for(const batch in latest){
-
-const row=batchTable.insertRow();
-
-row.insertCell(0).innerText=batch;
-row.insertCell(1).innerHTML = `
-<span style="
-padding:4px 10px;
-border-radius:12px;
-background:${getStatusColor(latest[batch].status)};
-color:white;
-font-size:12px;">
-${latest[batch].status}
-</span> `;
-row.insertCell(2).innerText=latest[batch].actor;
-
-}
-
-/* blockchain explorer */
-
-output.innerHTML="";
-
-blockchainData.forEach((block,index)=>{
-
-const div=document.createElement("div");
-
-let statusClass="";
-
-if(block.batchId == "GENESIS")
-{
-    statusClass = "genesis";
-}
-else if(block.status==="Expired") statusClass="expired";
-else if(block.status==="Collected") statusClass="collected";
-else if(block.status==="Verified") statusClass="verified";
-else if(block.status==="Destroyed") statusClass="destroyed";
-
-div.className="block "+statusClass;
-
-if(block.batchId === "GENESIS")
-{
-    div.innerHTML =
-    "<b>🌱 Genesis Block</b><br><br>"+
-    "System Initialization<br>"+
-    "Blockchain Started<br><br>"+
-    "Time: "+new Date(block.timestamp).toLocaleString()+"<br><br>"+
-    "Hash:<br>"+block.hash.substring(0,15)+"...";
-}
-else
-{
-    div.innerHTML =
-    "<b>Block #"+block.index+"</b><br><br>"+
-    "Batch: "+block.batchId+"<br>"+
-    "Actor: "+block.actor+"<br>"+
-    "Status: "+block.status+"<br><br>"+
-    "Time: "+new Date(block.timestamp).toLocaleString()+"<br><br>"+
-    "Prev Hash:<br>"+block.previousHash.substring(0,15)+"...<br><br>"+
-    "Hash:<br>"+block.hash.substring(0,15)+"...";
-}
-
-output.appendChild(div);
-
-if(index<blockchainData.length-1){
-
-const arrow=document.createElement("div");
-arrow.className="arrow";
-arrow.innerHTML="➡️";
-output.appendChild(arrow);
-
-}
-
-});
-
-}
-
-function resetBlockchain()
-{
-    if(confirm("Reset the entire blockchain?"))
-    {
-        fetch("/reset",{method:"POST"})
-        .then(()=>loadChain());
-    }
-}
-
-function exportReport(){
-
-const blob=new Blob([JSON.stringify(blockchainData,null,2)],{type:"application/json"});
-
-const url=URL.createObjectURL(blob);
-
-const a=document.createElement("a");
-
-a.href=url;
-a.download="blockchain_audit_report.json";
-
-a.click();
-
-}
-
-loadChain();
-
-document.querySelectorAll(".card-box").forEach((el,i)=>{
-    el.style.opacity = 0;
-    el.style.transform = "translateY(20px)";
-    setTimeout(()=>{
-        el.style.transition = "all 0.5s ease";
-        el.style.opacity = 1;
-        el.style.transform = "translateY(0)";
-    }, i * 150);
-})
-
-showSection("dashboard");
-
-const canvas = document.getElementById("bgCanvas");
-const ctx = canvas.getContext("2d");
-
-canvas.width = window.innerWidth;
-canvas.height = window.innerHeight;
-
-let particles = [];
-
-for(let i = 0; i < 60; i++)
-{
-    particles.push({
-        x: Math.random() * canvas.width,
-        y: Math.random() * canvas.height,
-        radius: Math.random() * 2 + 1,
-        dx: (Math.random() - 0.5) * 0.5,
-        dy: (Math.random() - 0.5) * 0.5
-    });
-}
-
-function animate()
-{
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-    particles.forEach(p =>
-    {
-        ctx.beginPath();
-        ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
-        ctx.fillStyle = "rgba(37,99,235,0.3)";
-        ctx.fill();
-
-        p.x += p.dx;
-        p.y += p.dy;
-
-        // bounce
-        if(p.x < 0 || p.x > canvas.width) p.dx *= -1;
-        if(p.y < 0 || p.y > canvas.height) p.dy *= -1;
-    });
-
-    requestAnimationFrame(animate);
-}
-
-animate();
-
-</script>
-
-</div>
-
+  <div id="app-layout">
+    
+    <!-- SIDEBAR NAVIGATION -->
+    <aside class="sidebar">
+      <div class="brand-header">
+        <div class="brand-logo">Rx</div>
+        <div>
+          <div class="brand-title">ReLogix Pro</div>
+          <div style="font-size: 11px; color: var(--text-light);">Reverse Logistics v2.0</div>
+        </div>
+      </div>
+
+      <nav class="nav-group">
+        <a class="nav-link active" data-view="dashboard">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/></svg>
+          <span>Executive Dashboard</span>
+        </a>
+
+        <a class="nav-link" data-view="batches">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
+          <span>Return Batches</span>
+        </a>
+
+        <a class="nav-link" data-view="blockchain">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>
+          <span>Blockchain Ledger</span>
+        </a>
+
+        <a class="nav-link" data-view="ai-risk">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+          <span>AI Risk & Insights</span>
+        </a>
+
+        <a class="nav-link" data-view="manifests">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"/></svg>
+          <span>QR & Manifests</span>
+        </a>
+      </nav>
+
+      <div class="user-panel">
+        <div class="role-pill" id="role-switcher-pill">
+          <div class="role-info">
+            <span class="role-name">Role: Pharmacy</span>
+            <span class="role-user">City Care Pharmacy</span>
+          </div>
+          <svg style="width: 16px; height: 16px; color: var(--text-muted);" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+        </div>
+      </div>
+    </aside>
+
+    <!-- MAIN CONTENT WRAPPER -->
+    <main class="main-wrapper">
+      
+      <!-- TOP NAVBAR -->
+      <header class="top-navbar">
+        <h1 class="page-title" id="page-title-text">Executive Analytics Dashboard</h1>
+        
+        <div class="navbar-actions">
+          <button class="icon-btn" id="btn-theme-toggle" title="Toggle Theme">
+            <svg id="theme-toggle-icon" style="width: 20px; height: 20px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/>
+            </svg>
+          </button>
+
+          <button class="btn-primary" onclick="window.appController.openModal('modal-new-return')">
+            <svg style="width: 18px; height: 18px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+            <span>+ New Return Batch</span>
+          </button>
+        </div>
+      </header>
+
+      <!-- VIEW SECTIONS CONTAINER -->
+      <div class="content-container">
+        
+        <!-- SECTION 1: EXECUTIVE DASHBOARD -->
+        <section class="view-section" id="view-dashboard">
+          <!-- KPI GRID CARDS -->
+          <div class="kpi-grid">
+            <div class="glass-card kpi-card">
+              <div class="kpi-header">
+                <span class="kpi-title">Total Return Batches</span>
+                <div class="kpi-icon"><svg style="width: 20px; height: 20px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg></div>
+              </div>
+              <div class="kpi-value" id="kpi-total-batches">5</div>
+              <div class="kpi-subtext">Registered across supply chain</div>
+            </div>
+
+            <div class="glass-card kpi-card emerald">
+              <div class="kpi-header">
+                <span class="kpi-title">Total Recoverable Value</span>
+                <div class="kpi-icon" style="color: #10b981;"><svg style="width: 20px; height: 20px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg></div>
+              </div>
+              <div class="kpi-value" id="kpi-total-val">$109,150</div>
+              <div class="kpi-subtext">Estimated refund credit</div>
+            </div>
+
+            <div class="glass-card kpi-card amber">
+              <div class="kpi-header">
+                <span class="kpi-title">Active Returns in Transit</span>
+                <div class="kpi-icon" style="color: #f59e0b;"><svg style="width: 20px; height: 20px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg></div>
+              </div>
+              <div class="kpi-value" id="kpi-active-returns">4</div>
+              <div class="kpi-subtext">Ongoing logistics tracking</div>
+            </div>
+
+            <div class="glass-card kpi-card purple">
+              <div class="kpi-header">
+                <span class="kpi-title">Eco Carbon Saved (CO2)</span>
+                <div class="kpi-icon" style="color: #8b5cf6;"><svg style="width: 20px; height: 20px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 002 2h1.5a2.5 2.5 0 002.5-2.5V14M12 21a9 9 0 110-18 9 9 0 010 18z"/></svg></div>
+              </div>
+              <div class="kpi-value" id="kpi-carbon-saved">212.4 kg</div>
+              <div class="kpi-subtext">Landfill & waste reduction</div>
+            </div>
+          </div>
+
+          <!-- CHARTS GRID -->
+          <div class="charts-grid">
+            <div class="glass-card">
+              <div class="chart-header">
+                <div class="chart-title">Return Reasons Breakdown</div>
+              </div>
+              <div class="chart-container" style="position: relative; height: 280px; width: 100%;">
+                <canvas id="chart-reason-breakdown"></canvas>
+              </div>
+            </div>
+
+            <div class="glass-card">
+              <div class="chart-header">
+                <div class="chart-title">Lifecycle Stage Distribution</div>
+              </div>
+              <div class="chart-container" style="position: relative; height: 280px; width: 100%;">
+                <canvas id="chart-stage-distribution"></canvas>
+              </div>
+            </div>
+          </div>
+
+          <!-- RECENT ACTIVITY FEED -->
+          <div class="glass-card">
+            <div class="chart-header">
+              <div class="chart-title">Recent Supply Chain Events</div>
+              <span class="badge badge-emerald">LIVE WEBSOCKET STREAM</span>
+            </div>
+            <div id="recent-activity-list"></div>
+          </div>
+        </section>
+
+
+        <!-- SECTION 2: BATCHES DATATABLE -->
+        <section class="view-section" id="view-batches" style="display: none;">
+          <div class="glass-card table-card">
+            <div class="chart-header" style="margin-bottom: 16px;">
+              <div class="chart-title">Registered Return Batches</div>
+            </div>
+
+            <div class="table-responsive">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Batch ID</th>
+                    <th>Product & Category</th>
+                    <th>Quantity</th>
+                    <th>Total Value</th>
+                    <th>Stage</th>
+                    <th>AI Risk Score</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="batches-table-body">
+                  <!-- Dynamically Rendered -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+
+        <!-- SECTION 3: BLOCKCHAIN AUDIT EXPLORER -->
+        <section class="view-section" id="view-blockchain" style="display: none;">
+          <div id="blockchain-status-banner" class="chain-banner">
+            <!-- Dynamic Status Banner -->
+          </div>
+
+          <div class="glass-card" style="margin-bottom: 24px;">
+            <div class="chart-header">
+              <div>
+                <div class="chart-title">Cryptographic SHA-256 Ledger Node Graph</div>
+                <p style="font-size: 13px; color: var(--text-muted); margin-top: 4px;">Each block is cryptographically linked with the hash of the previous block. Any payload tampering breaks the hash chain instantly.</p>
+              </div>
+              <div style="display: flex; gap: 10px;">
+                <button class="btn-secondary" onclick="window.appController.triggerTamperSimulation()" style="color: var(--accent-danger); border-color: rgba(239,68,68,0.3);">Simulate Hash Tampering</button>
+                <button class="btn-primary" onclick="window.appController.loadBlockchainData(true)">Re-Verify Chain</button>
+              </div>
+            </div>
+
+            <div class="chain-nodes-container" id="blockchain-nodes-list">
+              <!-- Dynamically Rendered Block Nodes -->
+            </div>
+          </div>
+        </section>
+
+
+        <!-- SECTION 4: AI RISK & ANOMALY INTELLIGENCE CENTER -->
+        <section class="view-section" id="view-ai-risk" style="display: none;">
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px;">
+            
+            <!-- INTERACTIVE AI RISK SIMULATOR -->
+            <div class="glass-card">
+              <div class="chart-header">
+                <div class="chart-title" style="color: var(--accent-primary);">⚡ Interactive AI Risk Simulator</div>
+              </div>
+              <p style="color: var(--text-muted); font-size: 13px; margin-bottom: 16px;">
+                Test how the AI Engine evaluates risk scores and determines optimal disposition routes based on temperature, expiry, and recall flags.
+              </p>
+
+              <form id="form-ai-simulator" onsubmit="return false;" style="display: flex; flex-direction: column; gap: 14px;">
+                <div>
+                  <label style="font-size: 12px; color: var(--text-muted); display: block; margin-bottom: 4px;">Drug Name</label>
+                  <input type="text" id="sim-drug-name" value="mRNA Vaccine Cold-Chain" style="width: 100%; background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); padding: 8px 12px; border-radius: var(--radius-md); color: var(--text-main);">
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                  <div>
+                    <label style="font-size: 12px; color: var(--text-muted); display: block; margin-bottom: 4px;">Category</label>
+                    <select id="sim-category" style="width: 100%; background: var(--bg-secondary); border: 1px solid var(--glass-border); padding: 8px 12px; border-radius: var(--radius-md); color: var(--text-main);">
+                      <option value="Cold-Chain Vaccines" selected>Cold-Chain Vaccines</option>
+                      <option value="Biologics">Biologics</option>
+                      <option value="Antibiotics">Antibiotics</option>
+                      <option value="Oncology">Oncology</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label style="font-size: 12px; color: var(--text-muted); display: block; margin-bottom: 4px;">Recorded Transit Temp (°C)</label>
+                    <input type="number" id="sim-temp" value="12.2" step="0.1" style="width: 100%; background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); padding: 8px 12px; border-radius: var(--radius-md); color: var(--text-main);">
+                  </div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                  <div>
+                    <label style="font-size: 12px; color: var(--text-muted); display: block; margin-bottom: 4px;">Days Remaining to Expiry</label>
+                    <input type="number" id="sim-expiry-days" value="20" style="width: 100%; background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); padding: 8px 12px; border-radius: var(--radius-md); color: var(--text-main);">
+                  </div>
+                  <div>
+                    <label style="font-size: 12px; color: var(--text-muted); display: block; margin-bottom: 4px;">Batch Total Valuation ($)</label>
+                    <input type="number" id="sim-value" value="35000" style="width: 100%; background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); padding: 8px 12px; border-radius: var(--radius-md); color: var(--text-main);">
+                  </div>
+                </div>
+
+                <div style="display: flex; align-items: center; gap: 8px; margin-top: 4px;">
+                  <input type="checkbox" id="sim-recall-flag">
+                  <label for="sim-recall-flag" style="font-size: 13px; color: var(--text-main);">Flag as FDA Safety Recall Notice</label>
+                </div>
+
+                <button class="btn-primary" onclick="window.appController.runAISimulation()" style="margin-top: 6px;">
+                  <span>⚡ Run AI Risk & Disposition Analysis</span>
+                </button>
+              </form>
+            </div>
+
+            <!-- AI SIMULATOR OUTPUT CARD -->
+            <div class="glass-card" id="ai-sim-result-card">
+              <div class="chart-header">
+                <div class="chart-title">AI Engine Evaluation Output</div>
+                <span class="badge badge-rose" id="sim-result-badge">Risk Score: 78/100</span>
+              </div>
+
+              <div id="sim-result-body">
+                <div style="margin-bottom: 16px;">
+                  <div style="font-size: 12px; color: var(--text-muted);">Risk Progress Gauge</div>
+                  <div style="width: 100%; height: 10px; background: rgba(255,255,255,0.1); border-radius: 5px; margin-top: 6px; overflow: hidden;">
+                    <div id="sim-risk-bar" style="width: 78%; height: 100%; background: linear-gradient(90deg, #f59e0b, #ef4444); transition: width 0.4s ease;"></div>
+                  </div>
+                </div>
+
+                <div style="background: rgba(255,255,255,0.03); border: 1px solid var(--glass-border); padding: 14px; border-radius: var(--radius-md); margin-bottom: 16px;">
+                  <strong style="font-size: 13px; color: var(--accent-primary);">AI Flagged Anomalies:</strong>
+                  <ul id="sim-flags-list" style="margin: 6px 0 0 18px; font-size: 12px; color: var(--text-muted);">
+                    <li>Temperature Excursion Detected: 12.2°C (Safe range: 2-8°C)</li>
+                    <li>Critical Expiry Window: 20 days remaining</li>
+                    <li>High Value Batch Alert: $35,000 USD</li>
+                  </ul>
+                </div>
+
+                <div style="background: rgba(59, 130, 246, 0.08); border: 1px solid rgba(59, 130, 246, 0.2); padding: 14px; border-radius: var(--radius-md);">
+                  <div style="font-size: 12px; color: #3b82f6; font-weight: 600;">Recommended Disposition:</div>
+                  <div id="sim-action-text" style="font-size: 16px; font-weight: 700; margin: 4px 0;">Quarantine & Lab Inspection</div>
+                  <div id="sim-reasoning-text" style="font-size: 12px; color: var(--text-muted);">High risk flag triggered due to temperature excursion/integrity ambiguity.</div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </section>
+
+
+        <!-- SECTION 5: MANIFESTS & QR HUB -->
+        <section class="view-section" id="view-manifests" style="display: none;">
+          <div class="glass-card">
+            <div class="chart-header">
+              <div class="chart-title">Compliance Manifest Generator & QR Code Verification</div>
+            </div>
+            <p style="color: var(--text-muted); font-size: 14px; margin-bottom: 20px;">Select any batch from the Batches tab to generate an official PDF Shipping & Return Manifest complete with QR barcode for carrier scanning.</p>
+          </div>
+        </section>
+
+      </div>
+    </main>
+
+  </div>
+
+
+  <!-- MODAL: INITIATE NEW RETURN -->
+  <div class="modal-backdrop" id="modal-new-return">
+    <div class="modal-box">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+        <h3 style="font-size: 18px; margin: 0;">Initiate Reverse Return Batch</h3>
+        <button class="icon-btn" onclick="window.appController.closeModal('modal-new-return')">&times;</button>
+      </div>
+
+      <form id="form-create-return" onsubmit="return false;" style="display: flex; flex-direction: column; gap: 16px;">
+        <div>
+          <label style="font-size: 12px; color: var(--text-muted); display: block; margin-bottom: 6px;">Product Name</label>
+          <input type="text" id="input-prod-name" placeholder="e.g. Amoxicillin 500mg Vials" style="width: 100%; background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); padding: 10px; border-radius: var(--radius-md); color: var(--text-main);">
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+          <div>
+            <label style="font-size: 12px; color: var(--text-muted); display: block; margin-bottom: 6px;">Category</label>
+            <select id="input-prod-cat" style="width: 100%; background: var(--bg-secondary); border: 1px solid var(--glass-border); padding: 10px; border-radius: var(--radius-md); color: var(--text-main);">
+              <option value="Antibiotics">Antibiotics</option>
+              <option value="Cold-Chain Vaccines">Cold-Chain Vaccines</option>
+              <option value="Biologics">Biologics</option>
+              <option value="Oncology">Oncology</option>
+              <option value="Cardiovascular">Cardiovascular</option>
+            </select>
+          </div>
+          <div>
+            <label style="font-size: 12px; color: var(--text-muted); display: block; margin-bottom: 6px;">Quantity (Units)</label>
+            <input type="number" id="input-prod-qty" placeholder="500" style="width: 100%; background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); padding: 10px; border-radius: var(--radius-md); color: var(--text-main);">
+          </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+          <div>
+            <label style="font-size: 12px; color: var(--text-muted); display: block; margin-bottom: 6px;">Unit Value ($ USD)</label>
+            <input type="number" id="input-prod-val" placeholder="18.50" step="0.01" style="width: 100%; background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); padding: 10px; border-radius: var(--radius-md); color: var(--text-main);">
+          </div>
+          <div>
+            <label style="font-size: 12px; color: var(--text-muted); display: block; margin-bottom: 6px;">Transit Temp (°C)</label>
+            <input type="number" id="input-prod-temp" placeholder="4.5" step="0.1" style="width: 100%; background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); padding: 10px; border-radius: var(--radius-md); color: var(--text-main);">
+          </div>
+        </div>
+
+        <div>
+          <label style="font-size: 12px; color: var(--text-muted); display: block; margin-bottom: 6px;">Return Reason</label>
+          <input type="text" id="input-prod-reason" placeholder="e.g. Near Expiry (< 30 days)" style="width: 100%; background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); padding: 10px; border-radius: var(--radius-md); color: var(--text-main);">
+        </div>
+
+        <div style="display: flex; justify-content: flex-end; gap: 12px; margin-top: 10px;">
+          <button class="btn-secondary" type="button" onclick="window.appController.closeModal('modal-new-return')">Cancel</button>
+          <button class="btn-primary" type="button" id="btn-submit-return">Submit Return Batch</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+
+  <!-- MODAL: BATCH INSPECTION & AI ANALYSIS -->
+  <div class="modal-backdrop" id="modal-batch-inspect">
+    <div class="modal-box" style="max-width: 680px;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+        <h3 style="font-size: 18px; margin: 0;">Batch AI Inspection & Compliance</h3>
+        <button class="icon-btn" onclick="window.appController.closeModal('modal-batch-inspect')">&times;</button>
+      </div>
+
+      <div style="display: flex; gap: 24px; margin-bottom: 20px;" id="ai-modal-top">
+        <div id="qr-code-canvas" style="background: white; padding: 10px; border-radius: var(--radius-md); height: 180px; width: 180px; display: flex; align-items: center; justify-content: center;"></div>
+        <div style="flex: 1;" id="ai-modal-content">
+          <!-- Dynamically Populated -->
+        </div>
+      </div>
+
+      <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--glass-border); padding-top: 16px;">
+        <button class="btn-secondary" id="btn-download-manifest">Download PDF Manifest</button>
+        <button class="btn-primary" onclick="window.appController.closeModal('modal-batch-inspect')">Done</button>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- TOAST NOTIFICATIONS -->
+  <div id="toast-container"></div>
+
+
+  <!-- Application JavaScript -->
+  <script src="/js/api.js"></script>
+  <script src="/js/dashboard.js"></script>
+  <script src="/js/blockchain_ui.js"></script>
+  <script src="/js/ai_insights.js"></script>
+  <script src="/js/qr_scanner.js"></script>
+  <script src="/js/app.js"></script>
 </body>
 </html>
