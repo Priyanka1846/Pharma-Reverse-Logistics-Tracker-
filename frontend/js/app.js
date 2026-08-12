@@ -85,6 +85,7 @@ class AppController {
     if (viewName === 'dashboard') this.loadDashboardData();
     if (viewName === 'blockchain') this.loadBlockchainData();
     if (viewName === 'batches') this.loadBatchesTable();
+    if (viewName === 'manifests') this.loadManifestsTab();
   }
 
   async loadDashboardData() {
@@ -160,6 +161,125 @@ class AppController {
     } catch (e) {
       console.error('Error inspecting batch:', e);
     }
+  }
+
+  async loadManifestsTab() {
+    try {
+      const data = await window.apiClient.getBatches();
+      const batches = data.batches || [];
+      const listEl = document.getElementById('manifest-batch-list');
+      if (!listEl) return;
+
+      if (batches.length === 0) {
+        listEl.innerHTML = '<div style="color: var(--text-muted); font-size: 13px; padding: 16px; text-align: center;">No batches found. Create a return batch first.</div>';
+        return;
+      }
+
+      listEl.innerHTML = batches.map(b => {
+        const riskClass = b.aiRiskScore >= 60 ? 'badge-rose' : (b.aiRiskScore >= 30 ? 'badge-amber' : 'badge-emerald');
+        const stageClass = b.currentStage === 'AI Inspected' ? 'badge-blue' : (b.currentStage === 'In Transit' ? 'badge-amber' : 'badge-emerald');
+        return `
+          <div class="manifest-batch-item" data-id="${b.id}" onclick="window.appController.selectBatchForManifest('${b.id}')" style="
+            padding: 14px 16px;
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            transition: all 0.2s;
+            background: rgba(255,255,255,0.02);
+          " onmouseover="this.style.background='rgba(59,130,246,0.08)';this.style.borderColor='rgba(59,130,246,0.4)'" onmouseout="this.style.background='rgba(255,255,255,0.02)';this.style.borderColor='var(--glass-border)'">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 10px;">
+              <div>
+                <div style="font-weight: 700; font-size: 13px; color: var(--accent-primary);">${b.id}</div>
+                <div style="font-size: 13px; margin-top: 2px;">${b.productName}</div>
+                <div style="font-size: 11px; color: var(--text-light); margin-top: 2px;">${b.category} &bull; ${b.quantity} units &bull; $${(b.totalValue || 0).toLocaleString()}</div>
+              </div>
+              <div style="display: flex; flex-direction: column; gap: 4px; align-items: flex-end;">
+                <span class="badge ${stageClass}" style="font-size: 10px;">${b.currentStage}</span>
+                <span class="badge ${riskClass}" style="font-size: 10px;">Risk: ${b.aiRiskScore || 0}</span>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    } catch (e) {
+      console.error('Error loading manifest batches:', e);
+    }
+  }
+
+  async selectBatchForManifest(batchId) {
+    // Highlight selected item
+    document.querySelectorAll('.manifest-batch-item').forEach(el => {
+      el.style.background = el.dataset.id === batchId ? 'rgba(59,130,246,0.12)' : 'rgba(255,255,255,0.02)';
+      el.style.borderColor = el.dataset.id === batchId ? 'rgba(59,130,246,0.6)' : 'var(--glass-border)';
+    });
+
+    try {
+      const data = await window.apiClient.getBatchById(batchId);
+      const batch = data.batch;
+      this._manifestBatch = data;
+
+      // Generate QR Code
+      const qrDisplay = document.getElementById('manifest-qr-display');
+      if (qrDisplay) {
+        qrDisplay.innerHTML = '<div id="manifest-qr-canvas" style="background: white; padding: 10px; border-radius: 8px; display: inline-block;"></div>';
+        if (window.QRCode) {
+          new QRCode(document.getElementById('manifest-qr-canvas'), {
+            text: `RELOGIX-PRO:${batch.id}`,
+            width: 160,
+            height: 160,
+            colorDark: '#000000',
+            colorLight: '#ffffff',
+            correctLevel: QRCode.CorrectLevel.H
+          });
+        }
+      }
+
+      const batchIdLabel = document.getElementById('manifest-qr-batch-id');
+      if (batchIdLabel) batchIdLabel.textContent = `Scan Code: RELOGIX-PRO:${batch.id}`;
+
+      // Render Batch Detail Summary
+      const detailBody = document.getElementById('manifest-detail-body');
+      if (detailBody) {
+        const rows = [
+          ['Batch ID', batch.id],
+          ['Product', batch.productName],
+          ['Category', batch.category],
+          ['Quantity', `${batch.quantity} units`],
+          ['Total Value', `$${(batch.totalValue || 0).toLocaleString()}`],
+          ['Return Reason', batch.reason],
+          ['Stage', batch.currentStage],
+          ['Disposition', batch.disposition],
+          ['Sender', batch.sender],
+          ['Carrier', batch.carrier],
+          ['Manufacturer', batch.manufacturer],
+          ['Expiry Date', batch.expiryDate || 'N/A'],
+          ['Temperature', `${batch.temperatureCelsius || 'N/A'} °C`],
+          ['AI Risk Score', `${batch.aiRiskScore || 0}/100 — ${batch.riskLevel || 'Low'}`],
+          ['Carbon Saved', `${batch.carbonSavedKg || 0} kg CO₂`]
+        ];
+        detailBody.innerHTML = rows.map(([k, v]) => `
+          <div style="display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid var(--glass-border);">
+            <span style="color: var(--text-muted); font-size: 12px;">${k}</span>
+            <span style="font-weight: 600; font-size: 12px; text-align: right; max-width: 55%;">${v}</span>
+          </div>
+        `).join('');
+      }
+
+      const detailCard = document.getElementById('manifest-detail-card');
+      if (detailCard) detailCard.style.display = 'block';
+
+      this.toast(`QR & Manifest loaded for ${batch.id}`);
+    } catch (e) {
+      console.error('Error selecting batch for manifest:', e);
+    }
+  }
+
+  downloadManifestFromHub() {
+    if (!this._manifestBatch) {
+      this.toast('Please select a batch first.');
+      return;
+    }
+    window.qrScannerUI.exportPDFManifest(this._manifestBatch.batch, this._manifestBatch.events || []);
   }
 
   async handleCreateReturn() {
